@@ -237,60 +237,69 @@ class _LocationFinderPageState extends State<LocationFinderPage> {
     final Set<Marker> markers = {};
     if (_userMarker != null) markers.add(_userMarker!);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: TextField(
-          decoration: InputDecoration(
-            hintText: 'Search a location...',
-            border: InputBorder.none,
-            hintStyle: TextStyle(color: Colors.white70),
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: TextField(
+            decoration: InputDecoration(
+              hintText: 'Search a location...',
+              border: InputBorder.none,
+              hintStyle: TextStyle(color: Colors.white70),
+            ),
+            style: TextStyle(color: Colors.white, fontSize: 18),
+            onSubmitted: (value) {
+              if (value.isNotEmpty) {
+                _searchLocation(value);
+              }
+            },
           ),
-          style: TextStyle(color: Colors.white, fontSize: 18),
-          onSubmitted: (value) {
-            if (value.isNotEmpty) {
-              _searchLocation(value);
-            }
-          },
+          backgroundColor: Colors.blue,
         ),
-        backgroundColor: Colors.blue,
-      ),
 
-      body: GoogleMap(
-        initialCameraPosition: _kInitial,
-        myLocationEnabled: false, // we manage our own marker
-        myLocationButtonEnabled: false,
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-          setState(() => _mapReady = true);
-        },
-        markers: markers,
-        mapType: MapType.normal,
-        zoomControlsEnabled: false,
-      ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            FloatingActionButton(
-              heroTag: 'recenter',
-              onPressed: _recenterMap,
-              child: const Icon(Icons.my_location),
-            ),
-            const SizedBox(height: 12),
-            FloatingActionButton(
-              heroTag: 'center_to_kathmandu',
-              onPressed: () async {
-                final GoogleMapController controller = await _controller.future;
-                controller.animateCamera(
-                  CameraUpdate.newCameraPosition(
-                    CameraPosition(target: _initialCameraPosition, zoom: 14.0),
-                  ),
-                );
-              },
-              child: const Icon(Icons.location_city),
-            ),
-          ],
+        body: GoogleMap(
+          initialCameraPosition: _kInitial,
+          myLocationEnabled: false, // we manage our own marker
+          myLocationButtonEnabled: false,
+          onMapCreated: (GoogleMapController controller) {
+            _controller.complete(controller);
+            setState(() => _mapReady = true);
+          },
+          markers: markers,
+          mapType: MapType.normal,
+          zoomControlsEnabled: false,
+        ),
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.only(bottom: 16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FloatingActionButton(
+                heroTag: 'recenter',
+                onPressed: _recenterMap,
+                child: const Icon(Icons.my_location),
+              ),
+              const SizedBox(height: 12),
+              FloatingActionButton(
+                heroTag: 'center_to_kathmandu',
+                onPressed: () async {
+                  final GoogleMapController controller =
+                      await _controller.future;
+                  controller.animateCamera(
+                    CameraUpdate.newCameraPosition(
+                      CameraPosition(
+                        target: _initialCameraPosition,
+                        zoom: 14.0,
+                      ),
+                    ),
+                  );
+                },
+                child: const Icon(Icons.location_city),
+              ),
+            ],
+          ),
         ),
       ),
     );
